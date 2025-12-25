@@ -30,6 +30,7 @@ mysql -u root -p medcare_db < sql/views/vw_TodayDiagnoses.sql
 # Step 5: Create procedures & triggers
 mysql -u root -p medcare_db < sql/procedures/sp_AddDiagnosis.sql
 mysql -u root -p medcare_db < sql/procedures/sp_AddPrescriptionItem.sql
+mysql -u root -p medcare_db < sql/triggers/trg_Check_DoctorPatient.sql
 mysql -u root -p medcare_db < sql/triggers/trg_AfterInsert_PrescriptionItem.sql
 mysql -u root -p medcare_db < sql/triggers/trg_Prevent_Diagnosis_Deletion.sql
 mysql -u root -p medcare_db < sql/triggers/trg_Prevent_Prescription_Deletion.sql
@@ -45,7 +46,7 @@ sql/
 ├── schema/          Tables & indexes
 ├── views/           Reporting views (6 files)
 ├── procedures/      Business logic (2 files)
-├── triggers/        Data integrity (3 files)
+├── triggers/        Data integrity (4 files)
 ├── seed/            Sample data
 ├── queries/         Query templates
 └── mutations/       Update templates
@@ -132,6 +133,7 @@ mysql -u root -p medcare_db < sql/procedures/sp_AddDiagnosis.sql
 mysql -u root -p medcare_db < sql/procedures/sp_AddPrescriptionItem.sql
 
 # Triggers
+mysql -u root -p medcare_db < sql/triggers/trg_Check_DoctorPatient.sql
 mysql -u root -p medcare_db < sql/triggers/trg_AfterInsert_PrescriptionItem.sql
 mysql -u root -p medcare_db < sql/triggers/trg_Prevent_Diagnosis_Deletion.sql
 mysql -u root -p medcare_db < sql/triggers/trg_Prevent_Prescription_Deletion.sql

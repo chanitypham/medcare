@@ -46,7 +46,6 @@ CREATE TABLE IF NOT EXISTS diagnosis (
         ON UPDATE CASCADE,
     
     -- Business logic constraints
-    CONSTRAINT chk_different_users CHECK (doctor_id != patient_id),
     CONSTRAINT chk_next_checkup_future CHECK (next_checkup IS NULL OR next_checkup >= DATE(date))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

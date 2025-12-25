@@ -1,3 +1,5 @@
+DELIMITER $$
+
 DROP PROCEDURE IF EXISTS sp_AddPrescriptionItem;
 
 -- ============================================================
@@ -127,4 +129,6 @@ BEGIN
   -- Cleanup context
   SET @current_staff_id = NULL;
 
-END;
+END$$
+
+DELIMITER ;
