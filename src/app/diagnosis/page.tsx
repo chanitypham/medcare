@@ -45,7 +45,6 @@ import {
   ArrowLeftIcon,
   ArrowRightIcon,
   MicIcon,
-  SquareIcon,
   LoaderIcon,
   UserIcon,
   HistoryIcon,

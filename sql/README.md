@@ -4,42 +4,7 @@ Complete step-by-step instructions to set up the MedCare database.
 
 ---
 
-## 📋 Quick Setup
-
-```bash
-# Step 1: Create database
-mysql -u root -p -e "CREATE DATABASE medcare_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-
-# Step 2: Create tables
-mysql -u root -p medcare_db < sql/schema/create_users.sql
-mysql -u root -p medcare_db < sql/schema/create_medications.sql
-mysql -u root -p medcare_db < sql/schema/create_diagnosis.sql
-mysql -u root -p medcare_db < sql/schema/create_prescription_item.sql
-
-# Step 3: Create indexes
-mysql -u root -p medcare_db < sql/schema/create_indexes.sql
-
-# Step 4: Create views
-mysql -u root -p medcare_db < sql/views/vw_DoctorPatientVisits.sql
-mysql -u root -p medcare_db < sql/views/vw_LowStockMedications.sql
-mysql -u root -p medcare_db < sql/views/vw_MedicationPopularity.sql
-mysql -u root -p medcare_db < sql/views/vw_PatientDiagnosisHistory.sql
-mysql -u root -p medcare_db < sql/views/vw_PrescriptionDetails.sql
-mysql -u root -p medcare_db < sql/views/vw_TodayDiagnoses.sql
-
-# Step 5: Create procedures & triggers
-mysql -u root -p medcare_db < sql/procedures/sp_AddDiagnosis.sql
-mysql -u root -p medcare_db < sql/procedures/sp_AddPrescriptionItem.sql
-mysql -u root -p medcare_db < sql/triggers/trg_AfterInsert_PrescriptionItem.sql
-mysql -u root -p medcare_db < sql/triggers/trg_Prevent_Diagnosis_Deletion.sql
-mysql -u root -p medcare_db < sql/triggers/trg_Prevent_Prescription_Deletion.sql
-mysql -u root -p medcare_db < sql/triggers/trg_Check_DoctorPatient_insert.sql
-mysql -u root -p medcare_db < sql/triggers/trg_Check_DoctorPatient_update.sql
-```
-
----
-
-## 📂 Directory Structure
+## Directory Structure
 
 ```
 sql/
@@ -59,12 +24,21 @@ sql/
 
 ### Step 1: Create Database
 
-**Option A - Command Line**:
+Connect to MySQL from the project root directory:
+
 ```bash
-mysql -u root -p -e "CREATE DATABASE medcare_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+mysql -u root -p
 ```
 
-**Option B - MySQL Workbench**:
+Then create the database:
+
+```sql
+CREATE DATABASE medcare_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE medcare_db;
+```
+
+**Alternative - MySQL Workbench**:
+
 1. Right-click → Create Schema
 2. Name: `medcare_db`
 3. Charset: `utf8mb4`, Collation: `utf8mb4_unicode_ci`
@@ -75,17 +49,18 @@ mysql -u root -p -e "CREATE DATABASE medcare_db CHARACTER SET utf8mb4 COLLATE ut
 
 **⚠️ IMPORTANT**: Run in this exact order (dependency order):
 
-```bash
-# Base tables (no dependencies)
-mysql -u root -p medcare_db < sql/schema/create_users.sql
-mysql -u root -p medcare_db < sql/schema/create_medications.sql
+```sql
+-- Base tables (no dependencies)
+SOURCE sql/schema/create_users.sql;
+SOURCE sql/schema/create_medications.sql;
 
-# Dependent tables
-mysql -u root -p medcare_db < sql/schema/create_diagnosis.sql
-mysql -u root -p medcare_db < sql/schema/create_prescription_item.sql
+-- Dependent tables
+SOURCE sql/schema/create_diagnosis.sql;
+SOURCE sql/schema/create_prescription_item.sql;
 ```
 
 **What each creates**:
+
 - `users`: Clerk-integrated authentication (7 columns)
 - `medications`: Medication catalog with inventory (7 columns)
 - `diagnosis`: Medical consultations (8 columns, 2 FKs to users)
@@ -95,49 +70,45 @@ mysql -u root -p medcare_db < sql/schema/create_prescription_item.sql
 
 ### Step 3: Create Indexes
 
-```bash
-mysql -u root -p medcare_db < sql/schema/create_indexes.sql
+```sql
+SOURCE sql/schema/create_indexes.sql;
 ```
 
-Creates **12 indexes** for performance (NFR-03: < 3 seconds):
+Creates **12 indexes** for performance:
+
 - Users: 3 indexes (nid_number, phone, role)
 - Diagnosis: 5 indexes (patient_id, doctor_id, date, composites)
 - Medications: 2 indexes (name, stock_quantity)
 - Prescription_item: 2 indexes (diagnosis_id, medication_id)
+
 ---
 
 ### Step 4: Create Views
 
-```bash
-# Run all 6 views
-for view in sql/views/*.sql; do mysql -u root -p medcare_db < "$view"; done
-```
-
-Or individually:
-```bash
-mysql -u root -p medcare_db < sql/views/vw_DoctorPatientVisits.sql
-mysql -u root -p medcare_db < sql/views/vw_LowStockMedications.sql
-mysql -u root -p medcare_db < sql/views/vw_MedicationPopularity.sql
-mysql -u root -p medcare_db < sql/views/vw_PatientDiagnosisHistory.sql
-mysql -u root -p medcare_db < sql/views/vw_PrescriptionDetails.sql
-mysql -u root -p medcare_db < sql/views/vw_TodayDiagnoses.sql
+```sql
+SOURCE sql/views/vw_DoctorPatientVisits.sql;
+SOURCE sql/views/vw_LowStockMedications.sql;
+SOURCE sql/views/vw_MedicationPopularity.sql;
+SOURCE sql/views/vw_PatientDiagnosisHistory.sql;
+SOURCE sql/views/vw_PrescriptionDetails.sql;
+SOURCE sql/views/vw_TodayDiagnoses.sql;
 ```
 
 ---
 
 ### Step 5: Create Procedures & Triggers
 
-```bash
-# Procedures
-mysql -u root -p medcare_db < sql/procedures/sp_AddDiagnosis.sql
-mysql -u root -p medcare_db < sql/procedures/sp_AddPrescriptionItem.sql
+```sql
+-- Procedures
+SOURCE sql/procedures/sp_AddDiagnosis.sql;
+SOURCE sql/procedures/sp_AddPrescriptionItem.sql;
 
-# Triggers
-mysql -u root -p medcare_db < sql/triggers/trg_AfterInsert_PrescriptionItem.sql
-mysql -u root -p medcare_db < sql/triggers/trg_Prevent_Diagnosis_Deletion.sql
-mysql -u root -p medcare_db < sql/triggers/trg_Prevent_Prescription_Deletion.sql
-mysql -u root -p medcare_db < sql/triggers/trg_Check_DoctorPatient_insert.sql
-mysql -u root -p medcare_db < sql/triggers/trg_Check_DoctorPatient_update.sql
+-- Triggers
+SOURCE sql/triggers/trg_AfterInsert_PrescriptionItem.sql;
+SOURCE sql/triggers/trg_Prevent_Diagnosis_Deletion.sql;
+SOURCE sql/triggers/trg_Prevent_Prescription_Deletion.sql;
+SOURCE sql/triggers/trg_Check_DoctorPatient_insert.sql;
+SOURCE sql/triggers/trg_Check_DoctorPatient_update.sql;
 ```
 
 ---
@@ -145,6 +116,7 @@ mysql -u root -p medcare_db < sql/triggers/trg_Check_DoctorPatient_update.sql
 ## 🧪 Load Sample Data (Optional)
 
 **Prerequisites**:
+
 1. Create 2 users via web app (1 doctor, 1 patient)
 2. Complete onboarding (remember your NIDs)
 3. Edit `sql/seed/seed_all.sql`:
@@ -153,9 +125,10 @@ mysql -u root -p medcare_db < sql/triggers/trg_Check_DoctorPatient_update.sql
    SET @PATIENT_NID = 'your_patient_nid';
    ```
 
-**Run**:
-```bash
-mysql -u root -p medcare_db < sql/seed/seed_all.sql
+**Run** (inside MySQL shell):
+
+```sql
+SOURCE sql/seed/seed_all.sql;
 ```
 
 Loads: 15 medications | 8 diagnoses | 12 prescription items
@@ -165,7 +138,7 @@ Loads: 15 medications | 8 diagnoses | 12 prescription items
 ## ✅ Verification
 
 ```sql
-SELECT 
+SELECT
     (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'medcare_db' AND TABLE_TYPE = 'BASE TABLE') AS tables,
     (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = 'medcare_db' AND INDEX_NAME != 'PRIMARY') AS indexes,
     (SELECT COUNT(*) FROM INFORMATION_SCHEMA.VIEWS WHERE TABLE_SCHEMA = 'medcare_db') AS views,
@@ -179,9 +152,11 @@ SELECT
 
 ## 🔄 Reset Database
 
-```bash
-mysql -u root -p -e "DROP DATABASE IF EXISTS medcare_db;"
-# Then repeat setup from Step 1
+Inside MySQL shell:
+
+```sql
+DROP DATABASE IF EXISTS medcare_db;
+-- Then repeat setup from Step 1
 ```
 
 ---

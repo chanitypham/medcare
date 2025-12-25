@@ -20,8 +20,10 @@
 
 import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 import DoctorDashboard from "@/components/DoctorDashboard";
 import UserDashboard from "@/components/UserDashboard";
+import { Button } from "@/components/ui/button";
 
 /**
  * Home page component
@@ -29,6 +31,7 @@ import UserDashboard from "@/components/UserDashboard";
  */
 export default function Home() {
   const { isLoaded: isUserLoaded } = useUser();
+  const router = useRouter();
 
   // State for role checking
   const [isCheckingRole, setIsCheckingRole] = useState(true);
@@ -88,9 +91,13 @@ export default function Home() {
     <div className="flex min-h-screen items-center justify-center">
       <div className="text-center">
         <h1 className="text-2xl font-semibold mb-2">Welcome</h1>
-        <p className="text-muted-foreground">
-          Please complete your profile setup to access the dashboard.
+        <p className="text-muted-foreground mb-4">
+          Please complete onboarding to use the application.
         </p>
+        {/* Button to redirect user to onboarding page for profile setup */}
+        <Button onClick={() => router.push("/onboarding")}>
+          Go to onboarding
+        </Button>
       </div>
     </div>
   );

@@ -28,7 +28,7 @@
  * 5. On error, displays error message using toast notification
  */
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { ArrowRightIcon } from "lucide-react";
